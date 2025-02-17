@@ -1,40 +1,70 @@
-import { Form, ActionPanel, Action, showToast } from "@raycast/api";
-
-type Values = {
-  textfield: string;
-  textarea: string;
-  datepicker: Date;
-  checkbox: boolean;
-  dropdown: string;
-  tokeneditor: string[];
-};
+import { useState } from "react";
+import { Form, ActionPanel, Action, List, showToast, Toast, useNavigation } from "@raycast/api";
+import * as solanaWeb3 from "@solana/web3.js";
+import bs58 from "bs58";
 
 export default function Command() {
-  function handleSubmit(values: Values) {
-    console.log(values);
-    showToast({ title: "Submitted form", message: "See logs for submitted values" });
-  }
+  const [count, setCount] = useState(10);
+  const [includePublicKey, setIncludePublicKey] = useState(false);
+  const { push } = useNavigation();
+
+  const handleSubmit = () => {
+    const startTime = performance.now();
+    const wallets = Array.from({ length: count }, () => {
+      const keypair = solanaWeb3.Keypair.generate();
+      const privateKey = bs58.encode(keypair.secretKey);
+      const publicKey = keypair.publicKey.toBase58();
+      return includePublicKey ? `${privateKey},${publicKey}` : privateKey;
+    });
+
+    const endTime = performance.now();
+    showToast(Toast.Style.Success, `Generated ${count} wallets in ${(endTime - startTime).toFixed(2)}ms`);
+    push(<WalletList wallets={wallets} />);
+  };
 
   return (
     <Form
       actions={
         <ActionPanel>
-          <Action.SubmitForm onSubmit={handleSubmit} />
+          <Action title="Generate Wallets" onAction={handleSubmit} />
         </ActionPanel>
       }
     >
-      <Form.Description text="This form showcases all available form elements." />
-      <Form.TextField id="textfield" title="Text field" placeholder="Enter text" defaultValue="Raycast" />
-      <Form.TextArea id="textarea" title="Text area" placeholder="Enter multi-line text" />
-      <Form.Separator />
-      <Form.DatePicker id="datepicker" title="Date picker" />
-      <Form.Checkbox id="checkbox" title="Checkbox" label="Checkbox Label" storeValue />
-      <Form.Dropdown id="dropdown" title="Dropdown">
-        <Form.Dropdown.Item value="dropdown-item" title="Dropdown Item" />
-      </Form.Dropdown>
-      <Form.TagPicker id="tokeneditor" title="Tag picker">
-        <Form.TagPicker.Item value="tagpicker-item" title="Tag Picker Item" />
-      </Form.TagPicker>
+      <Form.TextField
+        id="count"
+        title="Number of Wallets"
+        defaultValue="10"
+        onChange={(value) => setCount(Number(value) || 10)}
+      />
+      <Form.Checkbox id="includePublicKey" label="Include Public Keys" onChange={setIncludePublicKey} />
     </Form>
+  );
+}
+
+function WalletList({ wallets }: { wallets: string[] }) {
+  const csvContent = wallets.join("\n");
+
+  return (
+    <List>
+      <List.Item
+        title="Copy All as CSV"
+        actions={
+          <ActionPanel>
+            <Action.CopyToClipboard title="Copy All as CSV" content={csvContent} />
+          </ActionPanel>
+        }
+      />
+      {wallets.map((wallet, index) => (
+        <List.Item
+          key={index}
+          title={wallet}
+          actions={
+            <ActionPanel>
+              <Action.CopyToClipboard title="Copy" content={wallet} />
+            </ActionPanel>
+          }
+        />
+      ))}
+    </List>
   );
 }
