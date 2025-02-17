@@ -43,6 +43,30 @@ Always store your private keys securely and never share them with anyone. This t
 
 Feel free to open issues or submit pull requests if you have suggestions for improvements or bug fixes.
 
+## Roadmap
+
+Here are some planned improvements for future releases:
+
+### Version 1.1.0
+- [ ] Add preferences for configurable defaults:
+  - Default number of wallets to generate
+  - Default CSV export format
+  - Default inclusion of public keys
+- [ ] Add command for viewing wallet generation history
+- [ ] Add command for managing saved wallets
+
+### Version 1.2.0
+- [ ] Add support for different Solana networks (mainnet, testnet, devnet)
+- [ ] Add wallet balance checking functionality
+- [ ] Add QR code generation for wallet addresses
+- [ ] Add support for custom derivation paths
+
+### Version 1.3.0
+- [ ] Add support for different wallet formats (paper wallet, JSON)
+- [ ] Add batch operations for saved wallets
+- [ ] Add wallet labeling and organization features
+- [ ] Add export to different formats (JSON, PDF)
+
 ## License
 
 MIT License
