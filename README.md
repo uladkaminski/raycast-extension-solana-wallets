@@ -10,6 +10,9 @@ Introducing the Solana Wallet Generator, a powerful Raycast extension designed f
 - 📝 Easy CSV format export
 - 📎 One-click copying of individual wallet keys
 - ⚡️ Performance metrics showing generation time
+- 💾 Optional wallet generation history
+- 🔄 Multiple export formats (CSV, JSON)
+- ⚙️ Customizable preferences
 
 ## Usage
 
@@ -18,7 +21,7 @@ Introducing the Solana Wallet Generator, a powerful Raycast extension designed f
 3. Toggle whether to include public keys
 4. Click "Generate Wallets" or press Enter
 5. View the generated wallets in a list
-6. Copy individual wallet keys or export all as CSV
+6. Copy individual wallet keys or export all as CSV/JSON
 
 ## Technical Details
 
@@ -28,6 +31,8 @@ Introducing the Solana Wallet Generator, a powerful Raycast extension designed f
 - Generates standard Solana keypairs
 - Outputs private keys in Base58 format
 - Optional public key output in Base58 format
+- Configurable user preferences
+- Session-based wallet history
 
 ## Security Note
 
@@ -42,30 +47,6 @@ Always store your private keys securely and never share them with anyone. This t
 ## Contributing
 
 Feel free to open issues or submit pull requests if you have suggestions for improvements or bug fixes.
-
-## Roadmap
-
-Here are some planned improvements for future releases:
-
-### Version 1.1.0
-- [ ] Add preferences for configurable defaults:
-  - Default number of wallets to generate
-  - Default CSV export format
-  - Default inclusion of public keys
-- [ ] Add command for viewing wallet generation history
-- [ ] Add command for managing saved wallets
-
-### Version 1.2.0
-- [ ] Add support for different Solana networks (mainnet, testnet, devnet)
-- [ ] Add wallet balance checking functionality
-- [ ] Add QR code generation for wallet addresses
-- [ ] Add support for custom derivation paths
-
-### Version 1.3.0
-- [ ] Add support for different wallet formats (paper wallet, JSON)
-- [ ] Add batch operations for saved wallets
-- [ ] Add wallet labeling and organization features
-- [ ] Add export to different formats (JSON, PDF)
 
 ## License
 
