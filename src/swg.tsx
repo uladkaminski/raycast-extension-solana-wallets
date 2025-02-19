@@ -1,5 +1,17 @@
 import { useState, useEffect } from "react";
-import { Form, ActionPanel, Action, List, showToast, Toast, useNavigation, LocalStorage, confirmAlert, getPreferenceValues, openCommandPreferences } from "@raycast/api";
+import {
+  Form,
+  ActionPanel,
+  Action,
+  List,
+  showToast,
+  Toast,
+  useNavigation,
+  LocalStorage,
+  confirmAlert,
+  getPreferenceValues,
+  openCommandPreferences,
+} from "@raycast/api";
 import * as solanaWeb3 from "@solana/web3.js";
 import bs58 from "bs58";
 
@@ -54,7 +66,7 @@ export default function Command() {
 
     const endTime = performance.now();
     const generationTime = Number((endTime - startTime).toFixed(2));
-    
+
     showToast(Toast.Style.Success, `Generated ${count} wallets in ${generationTime}ms`);
 
     if (saveToHistory) {
@@ -68,12 +80,12 @@ export default function Command() {
       };
 
       const updatedSessions = [session, ...sessions];
-      
+
       // Keep only last 50 sessions
       if (updatedSessions.length > 50) {
         updatedSessions.pop();
       }
-      
+
       await LocalStorage.setItem("wallet-sessions", JSON.stringify(updatedSessions));
       setSessions(updatedSessions);
     }
@@ -120,7 +132,7 @@ export default function Command() {
                 shortcut={{ modifiers: ["cmd", "shift"], key: "delete" }}
               />
             )}
-            <Action 
+            <Action
               title="Back to Generator"
               onAction={() => setShowHistory(false)}
               shortcut={{ modifiers: ["cmd"], key: "escape" }}
@@ -129,7 +141,7 @@ export default function Command() {
         }
       >
         {sessions.length === 0 ? (
-          <List.EmptyView 
+          <List.EmptyView
             title="No History"
             description="Generate some wallets first to see them in history"
             icon="⏳"
@@ -142,28 +154,22 @@ export default function Command() {
               subtitle={new Date(session.timestamp).toLocaleString()}
               accessories={[
                 { text: `${session.generationTime}ms` },
-                { text: session.includePublicKey ? "With Public Keys" : "Private Keys Only" }
+                { text: session.includePublicKey ? "With Public Keys" : "Private Keys Only" },
               ]}
               actions={
                 <ActionPanel>
-                  <Action 
-                    title="View Wallets" 
-                    onAction={() => push(<WalletList wallets={session.wallets} />)} 
-                  />
-                  <Action 
+                  <Action title="View Wallets" onAction={() => push(<WalletList wallets={session.wallets} />)} />
+                  <Action
                     title="Delete from History"
                     style={Action.Style.Destructive}
                     onAction={async () => {
-                      const updatedSessions = sessions.filter(s => s.id !== session.id);
+                      const updatedSessions = sessions.filter((s) => s.id !== session.id);
                       await LocalStorage.setItem("wallet-sessions", JSON.stringify(updatedSessions));
                       setSessions(updatedSessions);
                       showToast(Toast.Style.Success, "Session deleted from history");
                     }}
                   />
-                  <Action 
-                    title="Back to Generator"
-                    onAction={() => setShowHistory(false)}
-                  />
+                  <Action title="Back to Generator" onAction={() => setShowHistory(false)} />
                   {sessions.length > 1 && (
                     <Action
                       title="Clear All Sessions"
@@ -186,11 +192,9 @@ export default function Command() {
       actions={
         <ActionPanel>
           <Action title="Generate Wallets" onAction={handleSubmit} />
-          {sessions.length > 0 && (
-            <Action title="View History" onAction={() => setShowHistory(true)} />
-          )}
-          <Action 
-            title="Open Extension Preferences" 
+          {sessions.length > 0 && <Action title="View History" onAction={() => setShowHistory(true)} />}
+          <Action
+            title="Open Extension Preferences"
             onAction={openCommandPreferences}
             shortcut={{ modifiers: ["cmd"], key: "," }}
           />
@@ -204,18 +208,13 @@ export default function Command() {
         onChange={(value) => setCount(Number(value) || 10)}
         placeholder="Enter a number between 1 and 1000"
       />
-      <Form.Checkbox 
-        id="includePublicKey" 
-        label="Include Public Keys" 
+      <Form.Checkbox
+        id="includePublicKey"
+        label="Include Public Keys"
         value={includePublicKey}
-        onChange={setIncludePublicKey} 
+        onChange={setIncludePublicKey}
       />
-      <Form.Checkbox 
-        id="saveToHistory" 
-        label="Save to History" 
-        value={saveToHistory}
-        onChange={setSaveToHistory} 
-      />
+      <Form.Checkbox id="saveToHistory" label="Save to History" value={saveToHistory} onChange={setSaveToHistory} />
     </Form>
   );
 }
@@ -232,13 +231,21 @@ function WalletList({ wallets }: { wallets: string[] }) {
     return { privateKey, publicKey };
   });
 
-  const hasPublicKeys = parsedWallets.some(w => w.publicKey);
+  const hasPublicKeys = parsedWallets.some((w) => w.publicKey);
 
   if (outputFormat === "json") {
     const jsonContent = JSON.stringify(parsedWallets, null, 2);
-    const privateKeysJson = JSON.stringify(parsedWallets.map(w => ({ privateKey: w.privateKey })), null, 2);
-    const publicKeysJson = hasPublicKeys 
-      ? JSON.stringify(parsedWallets.filter(w => w.publicKey).map(w => ({ publicKey: w.publicKey })), null, 2)
+    const privateKeysJson = JSON.stringify(
+      parsedWallets.map((w) => ({ privateKey: w.privateKey })),
+      null,
+      2,
+    );
+    const publicKeysJson = hasPublicKeys
+      ? JSON.stringify(
+          parsedWallets.filter((w) => w.publicKey).map((w) => ({ publicKey: w.publicKey })),
+          null,
+          2,
+        )
       : "";
 
     return (
@@ -247,19 +254,19 @@ function WalletList({ wallets }: { wallets: string[] }) {
           title="Copy All as JSON"
           actions={
             <ActionPanel>
-              <Action.CopyToClipboard 
-                title="Copy All Wallets" 
+              <Action.CopyToClipboard
+                title="Copy All Wallets"
                 content={jsonContent}
                 shortcut={{ modifiers: ["cmd"], key: "c" }}
               />
-              <Action.CopyToClipboard 
-                title="Copy Private Keys" 
+              <Action.CopyToClipboard
+                title="Copy Private Keys"
                 content={privateKeysJson}
                 shortcut={{ modifiers: ["cmd"], key: "p" }}
               />
               {hasPublicKeys && (
-                <Action.CopyToClipboard 
-                  title="Copy Public Keys" 
+                <Action.CopyToClipboard
+                  title="Copy Public Keys"
                   content={publicKeysJson}
                   shortcut={{ modifiers: ["cmd"], key: "u" }}
                 />
@@ -274,17 +281,14 @@ function WalletList({ wallets }: { wallets: string[] }) {
             subtitle={wallet.publicKey}
             actions={
               <ActionPanel>
-                <Action.CopyToClipboard 
-                  title="Copy Wallet" 
-                  content={JSON.stringify(wallet, null, 2)} 
-                />
-                <Action.CopyToClipboard 
-                  title="Copy Private Key" 
+                <Action.CopyToClipboard title="Copy Wallet" content={JSON.stringify(wallet, null, 2)} />
+                <Action.CopyToClipboard
+                  title="Copy Private Key"
                   content={JSON.stringify({ privateKey: wallet.privateKey }, null, 2)}
                 />
                 {wallet.publicKey && (
-                  <Action.CopyToClipboard 
-                    title="Copy Public Key" 
+                  <Action.CopyToClipboard
+                    title="Copy Public Key"
                     content={JSON.stringify({ publicKey: wallet.publicKey }, null, 2)}
                   />
                 )}
@@ -299,7 +303,10 @@ function WalletList({ wallets }: { wallets: string[] }) {
   // Default CSV format
   const csvContent = wallets.join("\n");
   const privateKeysCsv = parsedWallets.map((w) => w.privateKey).join("\n");
-  const publicKeysCsv = parsedWallets.filter((w) => w.publicKey).map((w) => w.publicKey).join("\n");
+  const publicKeysCsv = parsedWallets
+    .filter((w) => w.publicKey)
+    .map((w) => w.publicKey)
+    .join("\n");
 
   return (
     <List>
@@ -307,19 +314,19 @@ function WalletList({ wallets }: { wallets: string[] }) {
         title="Copy All as CSV"
         actions={
           <ActionPanel>
-            <Action.CopyToClipboard 
-              title="Copy All Wallets" 
+            <Action.CopyToClipboard
+              title="Copy All Wallets"
               content={csvContent}
               shortcut={{ modifiers: ["cmd"], key: "c" }}
             />
-            <Action.CopyToClipboard 
-              title="Copy Private Keys" 
+            <Action.CopyToClipboard
+              title="Copy Private Keys"
               content={privateKeysCsv}
               shortcut={{ modifiers: ["cmd"], key: "p" }}
             />
             {hasPublicKeys && (
-              <Action.CopyToClipboard 
-                title="Copy Public Keys" 
+              <Action.CopyToClipboard
+                title="Copy Public Keys"
                 content={publicKeysCsv}
                 shortcut={{ modifiers: ["cmd"], key: "u" }}
               />
@@ -334,20 +341,9 @@ function WalletList({ wallets }: { wallets: string[] }) {
           subtitle={wallet.publicKey}
           actions={
             <ActionPanel>
-              <Action.CopyToClipboard 
-                title="Copy Wallet" 
-                content={wallets[index]} 
-              />
-              <Action.CopyToClipboard 
-                title="Copy Private Key" 
-                content={wallet.privateKey}
-              />
-              {wallet.publicKey && (
-                <Action.CopyToClipboard 
-                  title="Copy Public Key" 
-                  content={wallet.publicKey}
-                />
-              )}
+              <Action.CopyToClipboard title="Copy Wallet" content={wallets[index]} />
+              <Action.CopyToClipboard title="Copy Private Key" content={wallet.privateKey} />
+              {wallet.publicKey && <Action.CopyToClipboard title="Copy Public Key" content={wallet.publicKey} />}
             </ActionPanel>
           }
         />
