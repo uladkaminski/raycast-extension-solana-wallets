@@ -49,7 +49,7 @@ export default function Command() {
       const keypair = solanaWeb3.Keypair.generate();
       const privateKey = bs58.encode(keypair.secretKey);
       const publicKey = keypair.publicKey.toBase58();
-      return includePublicKey ? `${privateKey},${publicKey}` : privateKey;
+      return includePublicKey ? `${privateKey}, ${publicKey}` : privateKey;
     });
 
     const endTime = performance.now();
@@ -228,7 +228,7 @@ interface Wallet {
 function WalletList({ wallets }: { wallets: string[] }) {
   const { outputFormat } = getPreferenceValues<Preferences>();
   const parsedWallets: Wallet[] = wallets.map((wallet) => {
-    const [privateKey, publicKey] = wallet.split(",");
+    const [privateKey, publicKey] = wallet.split(", ");
     return { privateKey, publicKey };
   });
 

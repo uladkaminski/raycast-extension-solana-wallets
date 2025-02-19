@@ -17,6 +17,9 @@
   - Separate private/public key copying
   - Structured data format
 
+### Fixed
+- CSV format now includes a space after comma between private and public keys for better compatibility with spreadsheet applications
+
 ## [1.0.0] - 2024-02-17
 
 ### Added
