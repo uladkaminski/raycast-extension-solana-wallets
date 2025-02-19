@@ -3,6 +3,7 @@
   "name": "solana-wallets-generation",
   "title": "Solana Wallets Generation",
   "description": "Introducing the Solana Wallet Generator, a powerful Raycast extension designed for developers and cryptocurrency enthusiasts seeking to efficiently create multiple Solana wallets. This tool streamlines the wallet generation process, allowing users to produce thousands of wallets swiftly and securely.",
+  "version": "1.1.0",
   "icon": "extension_icon.png",
   "author": "uladkaminski",
   "categories": [
@@ -25,6 +26,53 @@
       "subtitle": "Create Multiple Solana Wallets",
       "description": "Generate multiple Solana wallets with options for public keys and CSV export",
       "mode": "view"
+    }
+  ],
+  "preferences": [
+    {
+      "name": "defaultWalletCount",
+      "type": "textfield",
+      "required": false,
+      "title": "Default Number of Wallets",
+      "description": "Default number of wallets to generate (1-1000)",
+      "default": "10",
+      "placeholder": "Enter a number between 1 and 1000"
+    },
+    {
+      "name": "includePublicKeys",
+      "type": "checkbox",
+      "required": false,
+      "title": "Include Public Keys",
+      "description": "Include public keys in generated wallets by default",
+      "default": false,
+      "label": "Include public keys"
+    },
+    {
+      "name": "saveToHistory",
+      "type": "checkbox",
+      "required": false,
+      "title": "Save to History",
+      "description": "Save generated wallets to history by default",
+      "default": false,
+      "label": "Save to history"
+    },
+    {
+      "name": "outputFormat",
+      "type": "dropdown",
+      "required": false,
+      "title": "Output Format",
+      "description": "Choose the format for copying wallet data",
+      "default": "csv",
+      "data": [
+        {
+          "title": "CSV (One key per line)",
+          "value": "csv"
+        },
+        {
+          "title": "JSON (Pretty printed)",
+          "value": "json"
+        }
+      ]
     }
   ],
   "dependencies": {

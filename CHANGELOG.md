@@ -1,9 +1,24 @@
 # Changelog
 
-All notable changes to the "Raycast Solana Wallets Generator" extension will be documented in this file.
+## [1.1.0] - 2024-03-19
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+### Added
+- User preferences support:
+  - Configurable default number of wallets
+  - Option to include public keys by default
+  - Customizable output format (CSV/JSON)
+  - Optional history saving
+- Wallet generation history with:
+  - Session-based storage
+  - View and manage past generations
+  - Quick access to previous wallets
+- JSON export format with:
+  - Pretty-printed output
+  - Separate private/public key copying
+  - Structured data format
+
+### Fixed
+- CSV format now includes a space after comma between private and public keys for better compatibility with spreadsheet applications
 
 ## [1.0.0] - 2024-02-17
 

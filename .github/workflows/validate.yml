@@ -1,0 +1,97 @@
+name: Validate Extension
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: macos-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Validate package.json
+        run: |
+          # Check required fields
+          MISSING_FIELDS=""
+          
+          # Check author
+          if ! jq -e '.author' package.json > /dev/null; then
+            MISSING_FIELDS="$MISSING_FIELDS\n- author field"
+          fi
+          
+          # Check license is MIT
+          if [[ $(jq -r '.license' package.json) != "MIT" ]]; then
+            MISSING_FIELDS="$MISSING_FIELDS\n- license must be MIT"
+          fi
+          
+          # Check commands
+          if ! jq -e '.commands' package.json > /dev/null; then
+            MISSING_FIELDS="$MISSING_FIELDS\n- commands field"
+          fi
+          
+          # Check categories
+          if ! jq -e '.categories' package.json > /dev/null; then
+            MISSING_FIELDS="$MISSING_FIELDS\n- categories field"
+          fi
+          
+          if [[ ! -z "$MISSING_FIELDS" ]]; then
+            echo "Error: Missing or invalid required fields in package.json:$MISSING_FIELDS"
+            exit 1
+          fi
+      
+      - name: Check code style
+        run: npm run lint
+      
+      - name: Type check
+        run: npx tsc --noEmit
+      
+      - name: Build extension
+        run: npm run build
+      
+      - name: Verify assets
+        run: |
+          # Check icon exists and is correct size
+          if [[ ! -f "assets/extension_icon.png" ]]; then
+            echo "Error: extension_icon.png not found in assets directory"
+            exit 1
+          fi
+          
+          # Check icon size (should be 512x512)
+          ICON_SIZE=$(sips -g pixelHeight -g pixelWidth assets/extension_icon.png | grep -E 'pixel(Height|Width)' | awk '{print $2}' | uniq)
+          if [[ "$ICON_SIZE" != "512" ]]; then
+            echo "Error: extension_icon.png must be 512x512 pixels"
+            exit 1
+          fi
+      
+      - name: Verify documentation
+        run: |
+          # Check README exists
+          if [[ ! -f "README.md" ]]; then
+            echo "Error: README.md not found"
+            exit 1
+          fi
+          
+          # Check CHANGELOG exists and follows format
+          if [[ ! -f "CHANGELOG.md" ]]; then
+            echo "Error: CHANGELOG.md not found"
+            exit 1
+          fi
+          
+          # Verify changelog format
+          if ! grep -q "## \[" CHANGELOG.md; then
+            echo "Error: CHANGELOG.md must follow Keep a Changelog format"
+            exit 1
+          fi 
