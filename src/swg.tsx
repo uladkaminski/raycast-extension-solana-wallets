@@ -19,9 +19,9 @@ export default function Command() {
     try {
       setIsLoading(true);
       const startTime = performance.now();
-      
+
       const wallets: string[] = [];
-      
+
       try {
         for (let i = 0; i < count; i++) {
           const keypair = solanaWeb3.Keypair.generate();
@@ -29,7 +29,7 @@ export default function Command() {
           const publicKey = keypair.publicKey.toBase58();
           wallets.push(includePublicKey ? `${privateKey}, ${publicKey}` : privateKey);
         }
-        
+
         const endTime = performance.now();
         await showToast(Toast.Style.Success, `Generated ${count} wallets in ${(endTime - startTime).toFixed(2)}ms`);
         push(<WalletList wallets={wallets} />);
@@ -78,7 +78,7 @@ function WalletList({ wallets }: { wallets: string[] }) {
         title="Copy All as CSV"
         actions={
           <ActionPanel>
-            <Action.CopyToClipboard title="Copy All as CSV" content={csvContent} />
+            <Action.CopyToClipboard title="Copy All as Csv" content={csvContent} />
           </ActionPanel>
         }
       />
@@ -91,14 +91,9 @@ function WalletList({ wallets }: { wallets: string[] }) {
           actions={
             <ActionPanel>
               <Action.CopyToClipboard title="Copy Private Key" content={wallet.privateKey} />
+              {wallet.publicKey && <Action.CopyToClipboard title="Copy Public Key" content={wallet.publicKey} />}
               {wallet.publicKey && (
-                <Action.CopyToClipboard title="Copy Public Key" content={wallet.publicKey} />
-              )}
-              {wallet.publicKey && (
-                <Action.CopyToClipboard 
-                  title="Copy Both Keys" 
-                  content={`${wallet.privateKey}, ${wallet.publicKey}`} 
-                />
+                <Action.CopyToClipboard title="Copy Both Keys" content={`${wallet.privateKey}, ${wallet.publicKey}`} />
               )}
             </ActionPanel>
           }
